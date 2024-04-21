@@ -304,7 +304,6 @@ jobs:
             type=pep440,pattern={{version}},value=${{ matrix.cfg.tag }}
             type=pep440,pattern={{major}},value=${{ matrix.cfg.tag }},enable=${{ matrix.cfg.latest_major }}
             type=pep440,pattern={{major}}.{{minor}},value=${{ matrix.cfg.tag }},enable=${{ matrix.cfg.latest_minor }}
-            type=pep440,pattern={{major}}.{{minor}}.{{patch}},value=${{ matrix.cfg.tag }},enable=${{ matrix.cfg.latest_patch }}
 
       - name: Docker Setup QEMU
         uses: docker/setup-qemu-action@v3.0.0
