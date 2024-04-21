@@ -1,0 +1,12 @@
+diff --git a/lib/symboldatabase.cpp b/lib/symboldatabase.cpp
+index d59789236..018bd7b61 100644
+--- a/lib/symboldatabase.cpp
++++ b/lib/symboldatabase.cpp
+@@ -38,6 +38,7 @@
+ #include <iomanip>
+ #include <iostream>
+ #include <unordered_map>
++#include <limits>
+ //---------------------------------------------------------------------------
+ 
+ SymbolDatabase::SymbolDatabase(const Tokenizer *tokenizer, const Settings *settings, ErrorLogger *errorLogger)

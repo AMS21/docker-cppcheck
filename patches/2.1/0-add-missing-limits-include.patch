@@ -1,0 +1,12 @@
+diff --git a/lib/programmemory.cpp b/lib/programmemory.cpp
+index faf086b5e..94c2bc617 100644
+--- a/lib/programmemory.cpp
++++ b/lib/programmemory.cpp
+@@ -5,6 +5,7 @@
+ #include "symboldatabase.h"
+ #include <algorithm>
+ #include <cassert>
++#include <limits>
+ 
+ void ProgramMemory::setValue(nonneg int varid, const ValueFlow::Value &value)
+ {

@@ -1,0 +1,12 @@
+diff --git a/lib/mathlib.cpp b/lib/mathlib.cpp
+index 9457790f8..be53f237b 100644
+--- a/lib/mathlib.cpp
++++ b/lib/mathlib.cpp
+@@ -30,6 +30,7 @@
+ #include <sstream>
+ #include <stdexcept>
+ #include <numeric>
++#include <cstdint>
+ 
+ #include <simplecpp.h>
+ 

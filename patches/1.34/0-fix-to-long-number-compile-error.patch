@@ -1,0 +1,18 @@
+diff --git a/src/mathlib.cpp b/src/mathlib.cpp
+index 63696591d..7962d82e3 100644
+--- a/src/mathlib.cpp
++++ b/src/mathlib.cpp
+@@ -33,11 +33,11 @@ long MathLib::toLongNumber(const std::string &str)
+ {
+     if (strncmp(str.c_str(), "0x", 2) == 0)
+     {
+-        return strtoul(str.c_str(), '\0', 16);
++        return strtoul(str.c_str(), nullptr, 16);
+     }
+     if (strncmp(str.c_str(), "0", 1) == 0)
+     {
+-        return strtoul(str.c_str(), '\0', 8);
++        return strtoul(str.c_str(), nullptr, 8);
+     }
+     return atol(str.c_str());
+ }

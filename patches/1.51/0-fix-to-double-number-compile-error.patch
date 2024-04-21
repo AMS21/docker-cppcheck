@@ -1,0 +1,13 @@
+diff --git a/lib/mathlib.cpp b/lib/mathlib.cpp
+index 033ecfaa0..3032d45fe 100644
+--- a/lib/mathlib.cpp
++++ b/lib/mathlib.cpp
+@@ -67,7 +67,7 @@ double MathLib::toDoubleNumber(const std::string &str)
+ {
+     if (str.compare(0, 2, "0x") == 0)
+     {
+-        return std::strtoul(str.c_str(), '\0', 16);
++        return std::strtoul(str.c_str(), nullptr, 16);
+     }
+     // nullcheck
+     else if (isNullValue(str))

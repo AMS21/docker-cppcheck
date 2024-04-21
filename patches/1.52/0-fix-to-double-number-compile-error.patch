@@ -1,0 +1,13 @@
+diff --git a/lib/mathlib.cpp b/lib/mathlib.cpp
+index 305cf0b7b..b80ddd66b 100644
+--- a/lib/mathlib.cpp
++++ b/lib/mathlib.cpp
+@@ -62,7 +62,7 @@ MathLib::bigint MathLib::toLongNumber(const std::string &str)
+ double MathLib::toDoubleNumber(const std::string &str)
+ {
+     if (str.compare(0, 2, "0x") == 0) {
+-        return std::strtoul(str.c_str(), '\0', 16);
++        return std::strtoul(str.c_str(), nullptr, 16);
+     }
+     // nullcheck
+     else if (isNullValue(str))

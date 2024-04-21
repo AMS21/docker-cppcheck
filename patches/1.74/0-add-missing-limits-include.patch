@@ -1,0 +1,12 @@
+diff --git a/lib/valueflow.cpp b/lib/valueflow.cpp
+index e4f8fd7a6..daf1350d3 100644
+--- a/lib/valueflow.cpp
++++ b/lib/valueflow.cpp
+@@ -25,6 +25,7 @@
+ #include "token.h"
+ #include "tokenlist.h"
+ #include <stack>
++#include <limits>
+ 
+ namespace {
+     struct ProgramMemory {
