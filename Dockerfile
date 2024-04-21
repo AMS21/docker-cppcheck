@@ -3,7 +3,7 @@ FROM alpine:3.19
 ARG VERSION
 
 RUN apk update && apk upgrade --no-cache && \
-    apk add --no-cache cmake git g++ libstdc++ make pcre pcre-dev && \
+    apk add --no-cache cmake git g++ libstdc++ make pcre pcre-dev python3 && \
     git clone --depth 1 --branch "${VERSION}" https://github.com/danmar/cppcheck.git && \
     cd cppcheck && \
     if [ -d "../patches/${VERSION}" ]; then git apply ../patches/${VERSION}/*.patch; fi && \
@@ -13,5 +13,5 @@ RUN apk update && apk upgrade --no-cache && \
     make install && \
     cd ../.. && \
     rm -rf cppcheck && rm -rf patches && \
-    apk del --purge cmake git g++ make pcre-dev && \
+    apk del --purge cmake git g++ make pcre-dev python3 && \
     rm -rf /var/cache/apk/*
