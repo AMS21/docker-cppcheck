@@ -29,8 +29,11 @@ jobs:
 
       matrix:
         cfg:
+          # Cppcheck 2.17.X
+          - { tag: "v2.17.0", version: "2.17.0", latest: true,  latest_major: true,  latest_minor: true  }
+
           # Cppcheck 2.16.x
-          - { tag: "v2.16.0", version: "2.16.0", latest: true,  latest_major: true,  latest_minor: true  }
+          - { tag: "v2.16.0", version: "2.16.0", latest: false, latest_major: false, latest_minor: true  }
 
           # Cppcheck 2.15.x
           - { tag: "v2.15.0", version: "2.15.0", latest: false, latest_major: false, latest_minor: true  }
