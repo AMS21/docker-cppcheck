@@ -1,0 +1,226 @@
+diff --git a/lib/config.h b/lib/config.h
+index 34d426eb1..5574ee36e 100644
+--- a/lib/config.h
++++ b/lib/config.h
+@@ -20,25 +20,26 @@
+ #define configH
+ 
+ #ifdef MAXTIME
+-#error "MAXTIME is no longer supported - please use command-line options --checks-max-time=, --template-max-time= and --typedef-max-time= instead"
++#error                                                                         \
++    "MAXTIME is no longer supported - please use command-line options --checks-max-time=, --template-max-time= and --typedef-max-time= instead"
+ #endif
+ 
+ #ifdef _WIN32
+-#  ifdef CPPCHECKLIB_EXPORT
+-#    define CPPCHECKLIB __declspec(dllexport)
+-#  elif defined(CPPCHECKLIB_IMPORT)
+-#    define CPPCHECKLIB __declspec(dllimport)
+-#  else
+-#    define CPPCHECKLIB
+-#  endif
++#ifdef CPPCHECKLIB_EXPORT
++#define CPPCHECKLIB __declspec(dllexport)
++#elif defined(CPPCHECKLIB_IMPORT)
++#define CPPCHECKLIB __declspec(dllimport)
+ #else
+-#  define CPPCHECKLIB
++#define CPPCHECKLIB
++#endif
++#else
++#define CPPCHECKLIB
+ #endif
+ 
+ // MS Visual C++ memory leak debug tracing
+ #if !defined(DISABLE_CRTDBG_MAP_ALLOC) && defined(_MSC_VER) && defined(_DEBUG)
+-#  define _CRTDBG_MAP_ALLOC
+-#  include <crtdbg.h>
++#define _CRTDBG_MAP_ALLOC
++#include <crtdbg.h>
+ #endif
+ 
+ // compatibility macros
+@@ -59,87 +60,84 @@
+ #endif
+ 
+ // C++11 noexcept
+-#if defined(__cpp_noexcept_function_type) || \
+-    (defined(__GNUC__) && (__GNUC__ >= 5)) \
+-    || defined(__clang__) \
+-    || defined(__CPPCHECK__)
+-#  define NOEXCEPT noexcept
++#if defined(__cpp_noexcept_function_type) ||                                   \
++    (defined(__GNUC__) && (__GNUC__ >= 5)) || defined(__clang__) ||            \
++    defined(__CPPCHECK__)
++#define NOEXCEPT noexcept
+ #else
+-#  define NOEXCEPT
++#define NOEXCEPT
+ #endif
+ 
+ // C++11 noreturn
+-#if __has_cpp_attribute (noreturn) \
+-    || (defined(__GNUC__) && (__GNUC__ >= 5)) \
+-    || defined(__clang__) \
+-    || defined(__CPPCHECK__)
+-#  define NORETURN [[noreturn]]
++#if __has_cpp_attribute(noreturn) || (defined(__GNUC__) && (__GNUC__ >= 5)) || \
++    defined(__clang__) || defined(__CPPCHECK__)
++#define NORETURN [[noreturn]]
+ #elif defined(__GNUC__)
+-#  define NORETURN __attribute__((noreturn))
++#define NORETURN __attribute__((noreturn))
+ #else
+-#  define NORETURN
++#define NORETURN
+ #endif
+ 
+ // fallthrough
+-#if __cplusplus >= 201703L && __has_cpp_attribute (fallthrough)
+-#  define FALLTHROUGH [[fallthrough]]
++#if __cplusplus >= 201703L && __has_cpp_attribute(fallthrough)
++#define FALLTHROUGH [[fallthrough]]
+ #elif defined(__clang__)
+-#  define FALLTHROUGH [[clang::fallthrough]]
++#define FALLTHROUGH [[clang::fallthrough]]
+ #elif (defined(__GNUC__) && (__GNUC__ >= 7))
+-#  define FALLTHROUGH __attribute__((fallthrough))
++#define FALLTHROUGH __attribute__((fallthrough))
+ #else
+-#  define FALLTHROUGH
++#define FALLTHROUGH
+ #endif
+ 
+ // unused
+-#if __cplusplus >= 201703L && __has_cpp_attribute (maybe_unused)
+-#  define UNUSED [[maybe_unused]]
+-#elif defined(__GNUC__) \
+-    || defined(__clang__) \
+-    || defined(__CPPCHECK__)
+-#  define UNUSED __attribute__((unused))
++#if __cplusplus >= 201703L && __has_cpp_attribute(maybe_unused)
++#define UNUSED [[maybe_unused]]
++#elif defined(__GNUC__) || defined(__clang__) || defined(__CPPCHECK__)
++#define UNUSED __attribute__((unused))
+ #else
+-#  define UNUSED
++#define UNUSED
+ #endif
+ 
+ // warn_unused
+-#if __has_cpp_attribute (gnu::warn_unused) || \
++#if __has_cpp_attribute(gnu::warn_unused) ||                                   \
+     (defined(__clang__) && (__clang_major__ >= 15))
+-#  define WARN_UNUSED [[gnu::warn_unused]]
++#define WARN_UNUSED [[gnu::warn_unused]]
+ #else
+-#  define WARN_UNUSED
++#define WARN_UNUSED
+ #endif
+ 
+ // deprecated
+-#if defined(__GNUC__) \
+-    || defined(__clang__) \
+-    || defined(__CPPCHECK__)
+-#  define DEPRECATED __attribute__((deprecated))
++#if defined(__GNUC__) || defined(__clang__) || defined(__CPPCHECK__)
++#define DEPRECATED __attribute__((deprecated))
+ #elif defined(_MSC_VER)
+-#  define DEPRECATED __declspec(deprecated)
++#define DEPRECATED __declspec(deprecated)
+ #else
+-#  define DEPRECATED
++#define DEPRECATED
+ #endif
+ 
+ // returns_nonnull
+-#if __has_cpp_attribute (gnu::returns_nonnull)
+-#  define RET_NONNULL [[gnu::returns_nonnull]]
+-#elif (defined(__clang__) && ((__clang_major__ > 3) || ((__clang_major__ == 3) && (__clang_minor__ >= 7)))) \
+-    || (defined(__GNUC__) && (__GNUC__ >= 9))
+-#  define RET_NONNULL __attribute__((returns_nonnull))
++#if __has_cpp_attribute(gnu::returns_nonnull)
++#define RET_NONNULL [[gnu::returns_nonnull]]
++#elif (defined(__clang__) &&                                                   \
++       ((__clang_major__ > 3) ||                                               \
++        ((__clang_major__ == 3) && (__clang_minor__ >= 7)))) ||                \
++    (defined(__GNUC__) && (__GNUC__ >= 9))
++#define RET_NONNULL __attribute__((returns_nonnull))
+ #else
+-#  define RET_NONNULL
++#define RET_NONNULL
+ #endif
+ 
+-#define REQUIRES(msg, ...) class=typename std::enable_if<__VA_ARGS__::value>::type
++#define REQUIRES(msg, ...)                                                     \
++  class = typename std::enable_if<__VA_ARGS__::value>::type
+ 
+-// Use the nonneg macro when you want to assert that a variable/argument is not negative
++// Use the nonneg macro when you want to assert that a variable/argument is not
++// negative
+ #ifdef __CPPCHECK__
+-#define nonneg   __cppcheck_low__(0)
++#define nonneg __cppcheck_low__(0)
+ #elif defined(NONNEG)
+ // Enable non-negative values checking
+ // TODO : investigate using annotations/contracts for stronger value checking
+-#define nonneg   unsigned
++#define nonneg unsigned
+ #else
+ // Disable non-negative values checking
+ #define nonneg
+@@ -150,7 +148,7 @@
+ #endif
+ 
+ #ifndef ASAN
+-#ifdef  __SANITIZE_ADDRESS__
++#ifdef __SANITIZE_ADDRESS__
+ #define ASAN 1
+ #else
+ #define ASAN 0
+@@ -160,7 +158,8 @@
+ #if defined(_WIN32)
+ #define HAS_THREADING_MODEL_THREAD
+ #define STDCALL __stdcall
+-#elif ((defined(__GNUC__) || defined(__sun)) && !defined(__MINGW32__)) || defined(__CPPCHECK__)
++#elif ((defined(__GNUC__) || defined(__sun)) && !defined(__MINGW32__)) ||      \
++    defined(__CPPCHECK__)
+ #if !defined(DISALLOW_PROCESS_EXECUTOR)
+ #define HAS_THREADING_MODEL_FORK
+ #endif
+@@ -177,17 +176,23 @@
+ #define STRINGISIZE(...) #__VA_ARGS__
+ 
+ #ifdef __clang__
+-#define SUPPRESS_WARNING_PUSH(warning) _Pragma("clang diagnostic push") _Pragma(STRINGISIZE(clang diagnostic ignored warning))
++#define SUPPRESS_WARNING_PUSH(warning)                                         \
++  _Pragma("clang diagnostic push")                                             \
++      _Pragma(STRINGISIZE(clang diagnostic ignored warning))
+ #define SUPPRESS_WARNING_POP _Pragma("clang diagnostic pop")
+ #define SUPPRESS_WARNING_GCC_PUSH(warning)
+ #define SUPPRESS_WARNING_GCC_POP
+ #define SUPPRESS_WARNING_CLANG_PUSH(warning) SUPPRESS_WARNING_PUSH(warning)
+ #define SUPPRESS_WARNING_CLANG_POP SUPPRESS_WARNING_POP
+-#define FORCE_WARNING_PUSH(warn) _Pragma("clang diagnostic push") _Pragma(STRINGISIZE(clang diagnostic warning warn))
++#define FORCE_WARNING_PUSH(warn)                                               \
++  _Pragma("clang diagnostic push")                                             \
++      _Pragma(STRINGISIZE(clang diagnostic warning warn))
+ #define FORCE_WARNING_CLANG_PUSH(warning) FORCE_WARNING_PUSH(warning)
+ #define FORCE_WARNING_CLANG_POP SUPPRESS_WARNING_POP
+ #elif defined(__GNUC__)
+-#define SUPPRESS_WARNING_PUSH(warning) _Pragma("GCC diagnostic push") _Pragma(STRINGISIZE(GCC diagnostic ignored warning))
++#define SUPPRESS_WARNING_PUSH(warning)                                         \
++  _Pragma("GCC diagnostic push")                                               \
++      _Pragma(STRINGISIZE(GCC diagnostic ignored warning))
+ #define SUPPRESS_WARNING_POP _Pragma("GCC diagnostic pop")
+ #define SUPPRESS_WARNING_GCC_PUSH(warning) SUPPRESS_WARNING_PUSH(warning)
+ #define SUPPRESS_WARNING_GCC_POP SUPPRESS_WARNING_POP
+@@ -212,7 +217,7 @@
+ #define USE_WINDOWS_SEH
+ #endif
+ 
+-#if !defined(NO_UNIX_BACKTRACE_SUPPORT) && defined(__GNUC__) && !defined(__APPLE__) && !defined(__CYGWIN__) && !defined(__MINGW32__) && !defined(__NetBSD__) && !defined(__OpenBSD__) && !defined(__SVR4) && !defined(__QNX__) && !defined(_AIX)
++#if !defined(NO_UNIX_BACKTRACE_SUPPORT) && defined(__GNUC__) && defined(__GLIBC__) && !defined(__APPLE__) && !defined(__CYGWIN__) && !defined(__MINGW32__) && !defined(__NetBSD__) && !defined(__OpenBSD__) && !defined(__SVR4) && !defined(__QNX__) && !defined(_AIX)
+ #define USE_UNIX_BACKTRACE_SUPPORT
+ #endif
+ 
