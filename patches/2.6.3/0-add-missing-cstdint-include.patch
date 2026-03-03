@@ -1,0 +1,12 @@
+diff --git a/lib/token.h b/lib/token.h
+index 88de794fc..99011f544 100644
+--- a/lib/token.h
++++ b/lib/token.h
+@@ -28,6 +28,7 @@
+ #include "utils.h"
+ 
+ #include <cstddef>
++#include <cstdint>
+ #include <functional>
+ #include <list>
+ #include <memory>
