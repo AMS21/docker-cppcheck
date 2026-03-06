@@ -1,2 +1,2 @@
 # docker-cppcheck
- Just CppCheck inside a docker container
+Just Cppcheck inside a docker container

@@ -9,8 +9,8 @@ on:
     paths:
       # Workflow file itself
       - '.github/workflows/deploy_edge.yml'
-      # Dockerfile
-      - '**/Dockerfile'
+      # Dockerfiles
+      - '**/*.dockerfile'
   workflow_dispatch:
 
 permissions:
@@ -21,11 +21,16 @@ permissions:
 
 jobs:
   push_to_registry:
-    name: Push Docker branch image (edge)
+    name: Push Docker branch image (edge - ${{ matrix.variant.name }})
     runs-on: ubuntu-latest
 
     strategy:
       fail-fast: false
+
+      matrix:
+        variant:
+          - { name: "alpine", dockerfile: "alpine.dockerfile", suffix: "" }
+          - { name: "debian", dockerfile: "debian.dockerfile", suffix: "-debian" }
 
     steps:
       - name: Check out the repo
@@ -42,7 +47,7 @@ jobs:
           flavor: |
             latest=false
             prefix=
-            suffix=
+            suffix=${{ matrix.variant.suffix }}
           # generate Docker tags based on the following events/attributes
           tags: |
             type=raw,value=edge
@@ -71,6 +76,7 @@ jobs:
         uses: docker/build-push-action@v7
         with:
           context: ./
+          file: ${{ matrix.variant.dockerfile }}
           build-args: "VERSION=main"
           push: true
           platforms: "linux/386,linux/amd64,linux/arm/v6,linux/arm/v7,linux/arm64,linux/ppc64le,linux/s390x"
