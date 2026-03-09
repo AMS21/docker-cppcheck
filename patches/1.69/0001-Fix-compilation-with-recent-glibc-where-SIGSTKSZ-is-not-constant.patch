@@ -1,0 +1,30 @@
+From 469159e2be36dee31c2ab5d7c01d72cca3f4a513 Mon Sep 17 00:00:00 2001
+From: AMS21 <ams21.github@gmail.com>
+Date: Mon, 9 Mar 2026 18:40:48 +0100
+Subject: [PATCH] Fix compilation with recent glibc where SIGSTKSZ is not
+ constant. (#3378)
+
+Based upon Lauri Nurmi's patch 8869ee3554f19ce63892891a697378d8b745414b4
+---
+ cli/cppcheckexecutor.cpp | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/cli/cppcheckexecutor.cpp b/cli/cppcheckexecutor.cpp
+index 40614c6c5..d8dd23b65 100644
+--- a/cli/cppcheckexecutor.cpp
++++ b/cli/cppcheckexecutor.cpp
+@@ -309,7 +309,11 @@ static void print_stacktrace(FILE* f, bool demangling, int maxdepth)
+ #endif
+ }
+ 
++#ifdef __USE_DYNAMIC_STACK_SIZE
++static const size_t MYSTACKSIZE = 16*1024+32768;
++#else
+ static const size_t MYSTACKSIZE = 16*1024+SIGSTKSZ;
++#endif
+ static char mytstack[MYSTACKSIZE]; // alternative stack for signal handler
+ static bool bStackBelowHeap=false;
+ 
+-- 
+2.53.0
+

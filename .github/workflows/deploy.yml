@@ -307,8 +307,8 @@ jobs:
           - { tag: "v1.30.0", version: "1.30", latest: false, latest_major: false, latest_minor: true }
 
         variant:
-          - { name: "alpine", dockerfile: "alpine.dockerfile", suffix: "" }
-          - { name: "debian", dockerfile: "debian.dockerfile", suffix: "-debian" }
+          - { name: "alpine", suffix: "" }
+          - { name: "debian", suffix: "-debian" }
 
     steps:
       - name: Check out the repo
@@ -356,13 +356,15 @@ jobs:
         uses: docker/build-push-action@v7
         with:
           context: ./
-          file: ${{ matrix.variant.dockerfile }}
+          file: ${{ matrix.variant.name }}.dockerfile
           build-args: "VERSION=${{ matrix.cfg.version }}"
           push: true
           platforms: "linux/386,linux/amd64,linux/arm/v6,linux/arm/v7,linux/arm64,linux/ppc64le,linux/s390x"
           annotations: ${{ steps.meta.outputs.annotations }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
       - name: Attest Docker Hub
         uses: actions/attest-build-provenance@v4
