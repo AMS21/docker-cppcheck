@@ -307,8 +307,9 @@ jobs:
           - { tag: "v1.30.0", version: "1.30", latest: false, latest_major: false, latest_minor: true }
 
         variant:
-          - { name: "alpine", suffix: "" }
-          - { name: "debian", suffix: "-debian" }
+          - { name: "alpine",  suffix: "" }
+          - { name: "debian",  suffix: "-debian" }
+          - { name: "scratch", suffix: "-scratch" }
 
     steps:
       - name: Check out the repo
