@@ -1,4 +1,4 @@
-name: Publish Docker image
+name: Publish Docker image (scratch)
 
 on:
   push:
@@ -6,9 +6,9 @@ on:
       - main
     paths:
       # Workflow file itself
-      - '.github/workflows/deploy.yml'
+      - '.github/workflows/deploy_scratch.yml'
       # Dockerfiles
-      - '**/*.dockerfile'
+      - 'scratch.dockerfile'
       # Patches
       - 'patches/**'
   workflow_dispatch:
@@ -21,7 +21,7 @@ permissions:
 
 jobs:
   push_to_registry:
-    name: Push Docker image (${{ matrix.cfg.tag }} - ${{ matrix.variant.name }})
+    name: Push Docker image scratch (${{ matrix.cfg.tag }}
     runs-on: ubuntu-latest
 
     strategy:
@@ -306,11 +306,6 @@ jobs:
           # Cppcheck 1.30.x
           - { tag: "v1.30.0", version: "1.30", latest: false, latest_major: false, latest_minor: true }
 
-        variant:
-          - { name: "alpine",  suffix: "" }
-          - { name: "debian",  suffix: "-debian" }
-          - { name: "scratch", suffix: "-scratch" }
-
     steps:
       - name: Check out the repo
         uses: actions/checkout@v6
@@ -326,7 +321,7 @@ jobs:
           flavor: |
             latest=${{ matrix.cfg.latest }}
             prefix=
-            suffix=${{ matrix.variant.suffix }},onlatest=true
+            suffix=scratch,onlatest=true
           # generate Docker tags based on the following events/attributes
           tags: |
             type=pep440,pattern={{version}},value=${{ matrix.cfg.tag }}
@@ -357,10 +352,10 @@ jobs:
         uses: docker/build-push-action@v7
         with:
           context: ./
-          file: ${{ matrix.variant.name }}.dockerfile
+          file: scratch.dockerfile
           build-args: "VERSION=${{ matrix.cfg.version }}"
           push: true
-          platforms: "linux/386,linux/amd64,linux/arm/v6,linux/arm/v7,linux/arm64,linux/ppc64le,linux/s390x"
+          platforms: "linux/386,linux/amd64,linux/arm/v6,linux/arm/v7,linux/arm64,linux/ppc64le,linux/riscv64,linux/s390x"
           annotations: ${{ steps.meta.outputs.annotations }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}

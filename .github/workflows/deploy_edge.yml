@@ -29,8 +29,9 @@ jobs:
 
       matrix:
         variant:
-          - { name: "alpine", dockerfile: "alpine.dockerfile", suffix: "" }
-          - { name: "debian", dockerfile: "debian.dockerfile", suffix: "-debian" }
+          - { name: "alpine",  suffix: "" }
+          - { name: "debian",  suffix: "-debian" }
+          - { name: "scratch", suffix: "-scratch" }
 
     steps:
       - name: Check out the repo
@@ -76,7 +77,7 @@ jobs:
         uses: docker/build-push-action@v7
         with:
           context: ./
-          file: ${{ matrix.variant.dockerfile }}
+          file: ${{ matrix.variant.name }}.dockerfile
           build-args: "VERSION=main"
           push: true
           platforms: "linux/386,linux/amd64,linux/arm/v6,linux/arm/v7,linux/arm64,linux/ppc64le,linux/s390x"

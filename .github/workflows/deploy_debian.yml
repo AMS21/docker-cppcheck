@@ -1,0 +1,377 @@
+name: Publish Docker image (debian)
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      # Workflow file itself
+      - '.github/workflows/deploy_debian.yml'
+      # Dockerfiles
+      - 'debian.dockerfile'
+      # Patches
+      - 'patches/**'
+  workflow_dispatch:
+
+permissions:
+  attestations: write
+  contents: read
+  id-token: write
+  packages: write
+
+jobs:
+  push_to_registry:
+    name: Push Docker image debian (${{ matrix.cfg.tag }}
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+
+      matrix:
+        cfg:
+          # Cppcheck 2.20.X
+          - { tag: "v2.20.0", version: "2.20.0", latest: true,  latest_major: true,  latest_minor: true  }
+
+          # Cppcheck 2.19.X
+          - { tag: "v2.19.0", version: "2.19.0", latest: false, latest_major: false, latest_minor: true  }
+
+          # Cppcheck 2.18.X
+          - { tag: "v2.18.0", version: "2.18.0", latest: false, latest_major: false, latest_minor: true  }
+
+          # Cppcheck 2.17.X
+          - { tag: "v2.17.1", version: "2.17.1", latest: false, latest_major: false, latest_minor: true  }
+          - { tag: "v2.17.0", version: "2.17.0", latest: false, latest_major: false, latest_minor: false }
+
+          # Cppcheck 2.16.x
+          - { tag: "v2.16.0", version: "2.16.0", latest: false, latest_major: false, latest_minor: true  }
+
+          # Cppcheck 2.15.x
+          - { tag: "v2.15.0", version: "2.15.0", latest: false, latest_major: false, latest_minor: true  }
+
+          # Cppcheck 2.14.x
+          - { tag: "v2.14.2", version: "2.14.2", latest: false, latest_major: false, latest_minor: true  }
+          - { tag: "v2.14.1", version: "2.14.1", latest: false, latest_major: false, latest_minor: false }
+          - { tag: "v2.14.0", version: "2.14.0", latest: false, latest_major: false, latest_minor: false }
+
+          # Cppcheck 2.13.x
+          - { tag: "v2.13.4", version: "2.13.4", latest: false, latest_major: false, latest_minor: true  }
+          - { tag: "v2.13.3", version: "2.13.3", latest: false, latest_major: false, latest_minor: false }
+          - { tag: "v2.13.2", version: "2.13.2", latest: false, latest_major: false, latest_minor: false }
+          - { tag: "v2.13.1", version: "2.13.1", latest: false, latest_major: false, latest_minor: false }
+          - { tag: "v2.13.0", version: "2.13.0", latest: false, latest_major: false, latest_minor: false }
+
+          # Cppcheck 2.12.x
+          - { tag: "v2.12.1", version: "2.12.1", latest: false, latest_major: false, latest_minor: true  }
+          - { tag: "v2.12.0", version: "2.12.0", latest: false, latest_major: false, latest_minor: false }
+
+          # Cppcheck 2.11.x
+          - { tag: "v2.11.1", version: "2.11.1", latest: false, latest_major: false, latest_minor: true  }
+          - { tag: "v2.11.0", version: "2.11",   latest: false, latest_major: false, latest_minor: false }
+
+          # Cppcheck 2.10.x
+          - { tag: "v2.10.3", version: "2.10.3", latest: false, latest_major: false, latest_minor: true  }
+          - { tag: "v2.10.2", version: "2.10.2", latest: false, latest_major: false, latest_minor: false }
+          - { tag: "v2.10.1", version: "2.10.1", latest: false, latest_major: false, latest_minor: false }
+          - { tag: "v2.10.0", version: "2.10",   latest: false, latest_major: false, latest_minor: false }
+
+          # Cppcheck 2.9.x
+          - { tag: "v2.9.3", version: "2.9.3", latest: false, latest_major: false, latest_minor: true  }
+          - { tag: "v2.9.2", version: "2.9.2", latest: false, latest_major: false, latest_minor: false }
+          - { tag: "v2.9.1", version: "2.9.1", latest: false, latest_major: false, latest_minor: false }
+          - { tag: "v2.9.0", version: "2.9",   latest: false, latest_major: false, latest_minor: false }
+
+          # Cppcheck 2.8.x
+          - { tag: "v2.8.2", version: "2.8.2", latest: false, latest_major: false, latest_minor: true  }
+          - { tag: "v2.8.1", version: "2.8.1", latest: false, latest_major: false, latest_minor: false }
+          - { tag: "v2.8.0", version: "2.8",   latest: false, latest_major: false, latest_minor: false }
+
+          # Cppcheck 2.7.x
+          - { tag: "v2.7.5", version: "2.7.5", latest: false, latest_major: false, latest_minor: true  }
+          - { tag: "v2.7.4", version: "2.7.4", latest: false, latest_major: false, latest_minor: false }
+          - { tag: "v2.7.3", version: "2.7.3", latest: false, latest_major: false, latest_minor: false }
+          - { tag: "v2.7.2", version: "2.7.2", latest: false, latest_major: false, latest_minor: false }
+          - { tag: "v2.7.1", version: "2.7.1", latest: false, latest_major: false, latest_minor: false }
+          - { tag: "v2.7.0", version: "2.7",   latest: false, latest_major: false, latest_minor: false }
+
+          # Cppcheck 2.6.x
+          - { tag: "v2.6.3", version: "2.6.3", latest: false, latest_major: false, latest_minor: true  }
+          - { tag: "v2.6.2", version: "2.6.2", latest: false, latest_major: false, latest_minor: false }
+          - { tag: "v2.6.1", version: "2.6.1", latest: false, latest_major: false, latest_minor: false }
+          - { tag: "v2.6.0", version: "2.6",   latest: false, latest_major: false, latest_minor: false }
+
+          # Cppcheck 2.5.x
+          - { tag: "v2.5.0", version: "2.5", latest: false, latest_major: false, latest_minor: true  }
+
+          # Cppcheck 2.4.x
+          - { tag: "v2.4.1", version: "2.4.1", latest: false, latest_major: false, latest_minor: true  }
+          - { tag: "v2.4.0", version: "2.4",   latest: false, latest_major: false, latest_minor: false }
+
+          # Cppcheck 2.3.x
+          - { tag: "v2.3.0", version: "2.3", latest: false, latest_major: false, latest_minor: true }
+
+          # Cppcheck 2.2.x
+          - { tag: "v2.2.0", version: "2.2", latest: false, latest_major: false, latest_minor: true }
+
+          # Cppcheck 2.1.x
+          - { tag: "v2.1.0", version: "2.1", latest: false, latest_major: false, latest_minor: true }
+
+          # Cppcheck 2.0.x
+          - { tag: "v2.0.0", version: "2.0", latest: false, latest_major: false, latest_minor: true }
+
+          # Cppcheck 1.90.x
+          - { tag: "v1.90.0", version: "1.90", latest: false, latest_major: true, latest_minor: true }
+
+          # Cppcheck 1.89.x
+          - { tag: "v1.89.0", version: "1.89", latest: false, latest_major: false, latest_minor: true }
+
+          # Cppcheck 1.88.x
+          - { tag: "v1.88.0", version: "1.88", latest: false, latest_major: false, latest_minor: true }
+
+          # Cppcheck 1.87.x
+          - { tag: "v1.87.0", version: "1.87", latest: false, latest_major: false, latest_minor: true }
+
+          # Cppcheck 1.86.x
+          - { tag: "v1.86.0", version: "1.86", latest: false, latest_major: false, latest_minor: true }
+
+          # Cppcheck 1.85.x
+          - { tag: "v1.85.0", version: "1.85", latest: false, latest_major: false, latest_minor: true }
+
+          # Cppcheck 1.84.x
+          - { tag: "v1.84.0", version: "1.84", latest: false, latest_major: false, latest_minor: true }
+
+          # Cppcheck 1.83.x
+          - { tag: "v1.83.0", version: "1.83", latest: false, latest_major: false, latest_minor: true }
+
+          # Cppcheck 1.82.x
+          - { tag: "v1.82.0", version: "1.82", latest: false, latest_major: false, latest_minor: true }
+
+          # Cppcheck 1.81.x
+          - { tag: "v1.81.0", version: "1.81", latest: false, latest_major: false, latest_minor: true }
+
+          # Cppcheck 1.80.x
+          - { tag: "v1.80.0", version: "1.80", latest: false, latest_major: false, latest_minor: true }
+
+          # Cppcheck 1.79.x
+          - { tag: "v1.79.0", version: "1.79", latest: false, latest_major: false, latest_minor: true }
+
+          # Cppcheck 1.78.x
+          - { tag: "v1.78.0", version: "1.78", latest: false, latest_major: false, latest_minor: true }
+
+          # Cppcheck 1.77.x
+          - { tag: "v1.77.0", version: "1.77", latest: false, latest_major: false, latest_minor: true }
+
+          # Cppcheck 1.76.x
+          - { tag: "v1.76.1", version: "1.76.1", latest: false, latest_major: false, latest_minor: true  }
+          - { tag: "v1.76.0", version: "1.76",   latest: false, latest_major: false, latest_minor: false }
+
+          # Cppcheck 1.75.x
+          - { tag: "v1.75.0", version: "1.75", latest: false, latest_major: false, latest_minor: true }
+
+          # Cppcheck 1.74.x
+          - { tag: "v1.74.0", version: "1.74", latest: false, latest_major: false, latest_minor: true }
+
+          # Cppcheck 1.73.x
+          - { tag: "v1.73.0", version: "1.73", latest: false, latest_major: false, latest_minor: true }
+
+          # Cppcheck 1.72.x
+          - { tag: "v1.72.0", version: "1.72", latest: false, latest_major: false, latest_minor: true }
+
+          # Cppcheck 1.71.x
+          - { tag: "v1.71.0", version: "1.71", latest: false, latest_major: false, latest_minor: true }
+
+          # Cppcheck 1.70.x
+          - { tag: "v1.70.0", version: "1.70", latest: false, latest_major: false, latest_minor: true }
+
+          # Cppcheck 1.69.x
+          - { tag: "v1.69.0", version: "1.69", latest: false, latest_major: false, latest_minor: true }
+
+          # Cppcheck 1.68.x
+          - { tag: "v1.68.0", version: "1.68", latest: false, latest_major: false, latest_minor: true }
+
+          # Cppcheck 1.67.x
+          - { tag: "v1.67.0", version: "1.67", latest: false, latest_major: false, latest_minor: true }
+
+          # Cppcheck 1.66.x
+          - { tag: "v1.66.0", version: "1.66", latest: false, latest_major: false, latest_minor: true }
+
+          # Cppcheck 1.65.x
+          - { tag: "v1.65.0", version: "1.65", latest: false, latest_major: false, latest_minor: true }
+
+          # Cppcheck 1.64.x
+          - { tag: "v1.64.0", version: "1.64", latest: false, latest_major: false, latest_minor: true }
+
+          # Cppcheck 1.63.x
+          - { tag: "v1.63.1", version: "1.63.1", latest: false, latest_major: false, latest_minor: true  }
+          - { tag: "v1.63.0", version: "1.63",   latest: false, latest_major: false, latest_minor: false }
+
+          # Cppcheck 1.62.x
+          - { tag: "v1.62.1", version: "1.62.1", latest: false, latest_major: false, latest_minor: true  }
+          - { tag: "v1.62.0", version: "1.62",   latest: false, latest_major: false, latest_minor: false }
+
+          # Cppcheck 1.61.x
+          - { tag: "v1.61.0", version: "1.61", latest: false, latest_major: false, latest_minor: true }
+
+          # Cppcheck 1.60.x
+          - { tag: "v1.60.1", version: "1.60.1", latest: false, latest_major: false, latest_minor: true  }
+          - { tag: "v1.60.0", version: "1.60",   latest: false, latest_major: false, latest_minor: false }
+
+          # Cppcheck 1.59.x
+          - { tag: "v1.59.0", version: "1.59", latest: false, latest_major: false, latest_minor: true }
+
+          # Cppcheck 1.58.x
+          - { tag: "v1.58.0", version: "1.58", latest: false, latest_major: false, latest_minor: true }
+
+          # Cppcheck 1.57.x
+          - { tag: "v1.57.0", version: "1.57", latest: false, latest_major: false, latest_minor: true }
+
+          # Cppcheck 1.56.x
+          - { tag: "v1.56.0", version: "1.56", latest: false, latest_major: false, latest_minor: true }
+
+          # Cppcheck 1.55.x
+          - { tag: "v1.55.0", version: "1.55", latest: false, latest_major: false, latest_minor: true }
+
+          # Cppcheck 1.54.x
+          - { tag: "v1.54.0", version: "1.54", latest: false, latest_major: false, latest_minor: true }
+
+          # Cppcheck 1.53.x
+          - { tag: "v1.53.0", version: "1.53", latest: false, latest_major: false, latest_minor: true }
+
+          # Cppcheck 1.52.x
+          - { tag: "v1.52.0", version: "1.52", latest: false, latest_major: false, latest_minor: true }
+
+          # Cppcheck 1.51.x
+          - { tag: "v1.51.0", version: "1.51", latest: false, latest_major: false, latest_minor: true }
+
+          # Cppcheck 1.50.x
+          - { tag: "v1.50.0", version: "1.50", latest: false, latest_major: false, latest_minor: true }
+
+          # Cppcheck 1.49.x
+          - { tag: "v1.49.0", version: "1.49", latest: false, latest_major: false, latest_minor: true }
+
+          # Cppcheck 1.48.x
+          - { tag: "v1.48.0", version: "1.48", latest: false, latest_major: false, latest_minor: true }
+
+          # Cppcheck 1.47.x
+          - { tag: "v1.47.0", version: "1.47", latest: false, latest_major: false, latest_minor: true }
+
+          # Cppcheck 1.46.x
+          - { tag: "v1.46.1", version: "1.46.1", latest: false, latest_major: false, latest_minor: true  }
+          - { tag: "v1.46.0", version: "1.46",   latest: false, latest_major: false, latest_minor: false }
+
+          # Cppcheck 1.45.x
+          - { tag: "v1.45.0", version: "1.45", latest: false, latest_major: false, latest_minor: true }
+
+          # Cppcheck 1.44.x
+          - { tag: "v1.44.0", version: "1.44", latest: false, latest_major: false, latest_minor: true }
+
+          # Cppcheck 1.43.x
+          - { tag: "v1.43.0", version: "1.43", latest: false, latest_major: false, latest_minor: true }
+
+          # Cppcheck 1.42.x
+          - { tag: "v1.42.0", version: "1.42", latest: false, latest_major: false, latest_minor: true }
+
+          # Cppcheck 1.41.x
+          - { tag: "v1.41.0", version: "1.41", latest: false, latest_major: false, latest_minor: true }
+
+          # Cppcheck 1.40.x
+          - { tag: "v1.40.0", version: "1.40", latest: false, latest_major: false, latest_minor: true }
+
+          # Cppcheck 1.39.x
+          - { tag: "v1.39.0", version: "1.39", latest: false, latest_major: false, latest_minor: true }
+
+          # Cppcheck 1.38.x
+          - { tag: "v1.38.0", version: "1.38", latest: false, latest_major: false, latest_minor: true }
+
+          # Cppcheck 1.37.x
+          - { tag: "v1.37.0", version: "1.37", latest: false, latest_major: false, latest_minor: true }
+
+          # Cppcheck 1.36.x
+          - { tag: "v1.36.0", version: "1.36", latest: false, latest_major: false, latest_minor: true }
+
+          # Cppcheck 1.35.x
+          - { tag: "v1.35.0", version: "1.35", latest: false, latest_major: false, latest_minor: true }
+
+          # Cppcheck 1.34.x
+          - { tag: "v1.34.0", version: "1.34", latest: false, latest_major: false, latest_minor: true }
+
+          # Cppcheck 1.33.x
+          - { tag: "v1.33.0", version: "1.33", latest: false, latest_major: false, latest_minor: true }
+
+          # Cppcheck 1.32.x
+          - { tag: "v1.32.0", version: "1.32", latest: false, latest_major: false, latest_minor: true }
+
+          # Cppcheck 1.31.x
+          - { tag: "v1.31.0", version: "1.31", latest: false, latest_major: false, latest_minor: true }
+
+          # Cppcheck 1.30.x
+          - { tag: "v1.30.0", version: "1.30", latest: false, latest_major: false, latest_minor: true }
+
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v6
+
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v6
+        with:
+          # list of Docker images to use as base name for tags
+          images: |
+            ams21/cppcheck
+            ghcr.io/ams21/cppcheck
+          flavor: |
+            latest=${{ matrix.cfg.latest }}
+            prefix=
+            suffix=debian,onlatest=true
+          # generate Docker tags based on the following events/attributes
+          tags: |
+            type=pep440,pattern={{version}},value=${{ matrix.cfg.tag }}
+            type=pep440,pattern={{major}},value=${{ matrix.cfg.tag }},enable=${{ matrix.cfg.latest_major }}
+            type=pep440,pattern={{major}}.{{minor}},value=${{ matrix.cfg.tag }},enable=${{ matrix.cfg.latest_minor }}
+
+      - name: Docker Setup QEMU
+        uses: docker/setup-qemu-action@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v4
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push Docker image
+        id: push
+        uses: docker/build-push-action@v7
+        with:
+          context: ./
+          file: debian.dockerfile
+          build-args: "VERSION=${{ matrix.cfg.version }}"
+          push: true
+          platforms: "linux/amd64,linux/arm/v5,linux/arm/v7,linux/386,linux/arm64,linux/mips64le,linux/ppc64le,linux/riscv64,linux/s390x"
+          annotations: ${{ steps.meta.outputs.annotations }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Attest Docker Hub
+        uses: actions/attest-build-provenance@v4
+        with:
+          subject-name: index.docker.io/ams21/cppcheck
+          subject-digest: ${{ steps.push.outputs.digest }}
+          push-to-registry: true
+
+      - name: Attest GitHub Container Registry
+        uses: actions/attest-build-provenance@v4
+        with:
+          subject-name: ghcr.io/ams21/cppcheck
+          subject-digest: ${{ steps.push.outputs.digest }}
+          push-to-registry: true
