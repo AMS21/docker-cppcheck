@@ -1,4 +1,4 @@
-FROM alpine:3.23 AS builder
+FROM alpine:3.24 AS builder
 
 ARG VERSION=main
 
@@ -20,7 +20,7 @@ RUN make \
 RUN strip /usr/bin/cppcheck
 RUN mkdir -p /usr/share/cppcheck
 
-FROM alpine:3.23
+FROM alpine:3.24
 
 COPY --from=builder /usr/bin/cppcheck /usr/bin/cppcheck
 COPY --from=builder /usr/share/cppcheck /usr/share/cppcheck
