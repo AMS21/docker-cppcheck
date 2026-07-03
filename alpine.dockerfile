@@ -5,7 +5,7 @@ ARG VERSION=main
 RUN apk update
 RUN apk add --no-cache git g++ libstdc++ make pcre pcre-dev python3
 
-RUN git clone --depth 1 --branch "${VERSION}" https://github.com/danmar/cppcheck.git
+RUN git clone --depth 1 --branch "${VERSION}" https://github.com/cppcheck-opensource/cppcheck.git
 WORKDIR /cppcheck
 
 ADD patches /patches

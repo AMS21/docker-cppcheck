@@ -22,7 +22,7 @@ RUN make -j$(nproc) install
 WORKDIR /
 
 # Build cppcheck
-RUN git clone --depth 1 --branch "${VERSION}" https://github.com/danmar/cppcheck.git
+RUN git clone --depth 1 --branch "${VERSION}" https://github.com/cppcheck-opensource/cppcheck.git
 WORKDIR /cppcheck
 
 ADD patches /patches
