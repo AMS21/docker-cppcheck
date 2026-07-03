@@ -1,0 +1,66 @@
+From d035470963ed2ed67ab35068b38780b3e2bc1ad0 Mon Sep 17 00:00:00 2001
+From: XhmikosR <xhmikosr@users.sourceforge.net>
+Date: Mon, 17 Mar 2014 09:51:27 +0200
+Subject: [PATCH] Update tinyxml to v2.0.2.
+
+---
+ externals/tinyxml/tinyxml2.cpp | 24 ++++++++----------------
+ externals/tinyxml/tinyxml2.h   |  2 +-
+ 2 files changed, 9 insertions(+), 17 deletions(-)
+
+diff --git a/externals/tinyxml/tinyxml2.cpp b/externals/tinyxml/tinyxml2.cpp
+index 2ecb50a0d..a64dad613 100644
+--- a/externals/tinyxml/tinyxml2.cpp
++++ b/externals/tinyxml/tinyxml2.cpp
+@@ -1855,27 +1855,19 @@ void XMLPrinter::Print( const char* format, ... )
+         vfprintf( _fp, format, va );
+     }
+     else {
+-        // This seems brutally complex. Haven't figured out a better
+-        // way on windows.
+-#ifdef _MSC_VER
+-        int len = -1;
+-        int expand = 1000;
+-        while ( len < 0 ) {
+-            len = vsnprintf_s( _accumulator.Mem(), _accumulator.Capacity(), _TRUNCATE, format, va );
+-            if ( len < 0 ) {
+-                expand *= 3/2;
+-                _accumulator.PushArr( expand );
+-            }
+-        }
+-        char* p = _buffer.PushArr( len ) - 1;
+-        memcpy( p, _accumulator.Mem(), len+1 );
++#if defined(_MSC_VER) && (_MSC_VER >= 1400 )
++        int len = _vscprintf( format, va );
+ #else
+         int len = vsnprintf( 0, 0, format, va );
++#endif
+         // Close out and re-start the va-args
+         va_end( va );
+         va_start( va, format );
+-        char* p = _buffer.PushArr( len ) - 1;
+-        vsnprintf( p, len+1, format, va );
++        char* p = _buffer.PushArr( len ) - 1;	// back up over the null terminator.
++#if defined(_MSC_VER) && (_MSC_VER >= 1400 )
++		vsnprintf_s( p, len+1, _TRUNCATE, format, va );
++#else
++		vsnprintf( p, len+1, format, va );
+ #endif
+     }
+     va_end( va );
+diff --git a/externals/tinyxml/tinyxml2.h b/externals/tinyxml/tinyxml2.h
+index 3df3e8dc5..cb1dc1b29 100644
+--- a/externals/tinyxml/tinyxml2.h
++++ b/externals/tinyxml/tinyxml2.h
+@@ -121,7 +121,7 @@ inline int TIXML_SNPRINTF( char* buffer, size_t size, const char* format, ... )
+ */
+ static const int TIXML2_MAJOR_VERSION = 2;
+ static const int TIXML2_MINOR_VERSION = 0;
+-static const int TIXML2_PATCH_VERSION = 0;
++static const int TIXML2_PATCH_VERSION = 2;
+ 
+ namespace tinyxml2
+ {
+-- 
+2.55.0
+

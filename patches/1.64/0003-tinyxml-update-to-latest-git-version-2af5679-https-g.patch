@@ -1,0 +1,137 @@
+From ed927e9b60f9e8102e699cdebc74d496cf43fb6c Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Matthias=20Kr=C3=BCger?= <matthias.krueger@famsik.de>
+Date: Mon, 18 Aug 2014 17:23:40 +0200
+Subject: [PATCH] tinyxml: update to latest git version 2af5679
+ (https://github.com/leethomason/tinyxml2).
+
+---
+ externals/tinyxml/tinyxml2.cpp | 28 +++++++++++++++++++++++-----
+ externals/tinyxml/tinyxml2.h   |  9 ++++++---
+ 2 files changed, 29 insertions(+), 8 deletions(-)
+ mode change 100755 => 100644 externals/tinyxml/tinyxml2.cpp
+ mode change 100755 => 100644 externals/tinyxml/tinyxml2.h
+
+diff --git a/externals/tinyxml/tinyxml2.cpp b/externals/tinyxml/tinyxml2.cpp
+old mode 100755
+new mode 100644
+index a64dad613..a6ad63a89
+--- a/externals/tinyxml/tinyxml2.cpp
++++ b/externals/tinyxml/tinyxml2.cpp
+@@ -1668,7 +1668,7 @@ XMLError XMLDocument::LoadFile( const char* filename )
+     Clear();
+     FILE* fp = 0;
+ 
+-#if defined(_MSC_VER) && (_MSC_VER >= 1400 )
++#if defined(_MSC_VER) && (_MSC_VER >= 1400 ) && (!defined WINCE)
+     errno_t err = fopen_s(&fp, filename, "rb" );
+     if ( !fp || err) {
+ #else
+@@ -1689,16 +1689,20 @@ XMLError XMLDocument::LoadFile( FILE* fp )
+     Clear();
+ 
+     fseek( fp, 0, SEEK_SET );
+-    fgetc( fp );
+-    if ( ferror( fp ) != 0 ) {
++    if ( fgetc( fp ) == EOF && ferror( fp ) != 0 ) {
+         SetError( XML_ERROR_FILE_READ_ERROR, 0, 0 );
+         return _errorID;
+     }
+ 
+     fseek( fp, 0, SEEK_END );
+-    size_t size = ftell( fp );
++    const long filelength = ftell( fp );
+     fseek( fp, 0, SEEK_SET );
++    if ( filelength == -1L ) {
++        SetError( XML_ERROR_FILE_READ_ERROR, 0, 0 );
++        return _errorID;
++    }
+ 
++    const size_t size = filelength;
+     if ( size == 0 ) {
+         SetError( XML_ERROR_EMPTY_DOCUMENT, 0, 0 );
+         return _errorID;
+@@ -1729,7 +1733,7 @@ XMLError XMLDocument::LoadFile( FILE* fp )
+ XMLError XMLDocument::SaveFile( const char* filename, bool compact )
+ {
+     FILE* fp = 0;
+-#if defined(_MSC_VER) && (_MSC_VER >= 1400 )
++#if defined(_MSC_VER) && (_MSC_VER >= 1400 ) && (!defined WINCE)
+     errno_t err = fopen_s(&fp, filename, "w" );
+     if ( !fp || err) {
+ #else
+@@ -1856,7 +1860,17 @@ void XMLPrinter::Print( const char* format, ... )
+     }
+     else {
+ #if defined(_MSC_VER) && (_MSC_VER >= 1400 )
++		#if defined(WINCE)
++		int len = 512;
++		do {
++		    len = len*2;
++		    char* str = new char[len]();
++			len = _vsnprintf(str, len, format, va);
++			delete[] str;
++		}while (len < 0);
++		#else
+         int len = _vscprintf( format, va );
++		#endif
+ #else
+         int len = vsnprintf( 0, 0, format, va );
+ #endif
+@@ -1865,7 +1879,11 @@ void XMLPrinter::Print( const char* format, ... )
+         va_start( va, format );
+         char* p = _buffer.PushArr( len ) - 1;	// back up over the null terminator.
+ #if defined(_MSC_VER) && (_MSC_VER >= 1400 )
++		#if defined(WINCE)
++		_vsnprintf( p, len+1, format, va );
++		#else
+ 		vsnprintf_s( p, len+1, _TRUNCATE, format, va );
++		#endif
+ #else
+ 		vsnprintf( p, len+1, format, va );
+ #endif
+diff --git a/externals/tinyxml/tinyxml2.h b/externals/tinyxml/tinyxml2.h
+old mode 100755
+new mode 100644
+index 183f6dc5b..f4503fd5b
+--- a/externals/tinyxml/tinyxml2.h
++++ b/externals/tinyxml/tinyxml2.h
+@@ -91,7 +91,7 @@ distribution.
+ #endif
+ 
+ 
+-#if defined(_MSC_VER) && (_MSC_VER >= 1400 )
++#if defined(_MSC_VER) && (_MSC_VER >= 1400 ) && (!defined WINCE)
+ // Microsoft visual studio, version 2005 and higher.
+ /*int _snprintf_s(
+    char *buffer,
+@@ -109,6 +109,9 @@ inline int TIXML_SNPRINTF( char* buffer, size_t size, const char* format, ... )
+     return result;
+ }
+ #define TIXML_SSCANF   sscanf_s
++#elif defined WINCE
++#define TIXML_SNPRINTF _snprintf
++#define TIXML_SSCANF   sscanf
+ #else
+ // GCC version 3 and higher
+ //#warning( "Using sn* functions." )
+@@ -367,7 +370,7 @@ public:
+             return;
+         }
+         --_currentAllocs;
+-        Chunk* chunk = (Chunk*)mem;
++        Chunk* chunk = static_cast<Chunk*>( mem );
+ #ifdef DEBUG
+         memset( chunk, 0xfe, sizeof(Chunk) );
+ #endif
+@@ -2031,7 +2034,7 @@ public:
+     }
+ 
+ protected:
+-	virtual bool CompactMode( const XMLElement& )	{ return _compactMode; };
++	virtual bool CompactMode( const XMLElement& )	{ return _compactMode; }
+ 
+ 	/** Prints out the space before an element. You may override to change
+ 	    the space and tabs used. A PrintSpace() override should call Print().
+-- 
+2.55.0
+

@@ -1,0 +1,132 @@
+From be2ab9eb1223f2321250d087b7406b0f0a8da0f3 Mon Sep 17 00:00:00 2001
+From: PKEuS <philipp.kloke@web.de>
+Date: Sun, 3 Jan 2016 10:23:56 +0100
+Subject: [PATCH] Updated TinyXML
+
+---
+ externals/tinyxml/tinyxml2.cpp | 23 ++++++++++++++++++++++-
+ externals/tinyxml/tinyxml2.h   | 28 +++++++++-------------------
+ 2 files changed, 31 insertions(+), 20 deletions(-)
+
+diff --git a/externals/tinyxml/tinyxml2.cpp b/externals/tinyxml/tinyxml2.cpp
+index 4a1573f03..510fc82d1 100644
+--- a/externals/tinyxml/tinyxml2.cpp
++++ b/externals/tinyxml/tinyxml2.cpp
+@@ -177,6 +177,7 @@ void StrPair::Reset()
+ 
+ void StrPair::SetStr( const char* str, int flags )
+ {
++    TIXMLASSERT( str );
+     Reset();
+     size_t len = strlen( str );
+     TIXMLASSERT( _start == 0 );
+@@ -1914,6 +1915,26 @@ XMLError XMLDocument::LoadFile( const char* filename )
+     return _errorID;
+ }
+ 
++// This is likely overengineered template art to have a check that unsigned long value incremented
++// by one still fits into size_t. If size_t type is larger than unsigned long type
++// (x86_64-w64-mingw32 target) then the check is redundant and gcc and clang emit
++// -Wtype-limits warning. This piece makes the compiler select code with a check when a check
++// is useful and code with no check when a check is redundant depending on how size_t and unsigned long
++// types sizes relate to each other.
++template
++<bool = (sizeof(unsigned long) >= sizeof(size_t))>
++struct LongFitsIntoSizeTMinusOne {
++    static bool Fits( unsigned long value )
++    {
++        return value < (size_t)-1;
++    }
++};
++
++template <>
++bool LongFitsIntoSizeTMinusOne<false>::Fits( unsigned long /*value*/ )
++{
++    return true;
++}
+ 
+ XMLError XMLDocument::LoadFile( FILE* fp )
+ {
+@@ -1933,7 +1954,7 @@ XMLError XMLDocument::LoadFile( FILE* fp )
+         return _errorID;
+     }
+ 
+-    if ( (unsigned long)filelength >= (size_t)-1 ) {
++    if ( !LongFitsIntoSizeTMinusOne<>::Fits( filelength ) ) {
+         // Cannot handle files which won't fit in buffer together with null terminator
+         SetError( XML_ERROR_FILE_READ_ERROR, 0, 0 );
+         return _errorID;
+diff --git a/externals/tinyxml/tinyxml2.h b/externals/tinyxml/tinyxml2.h
+index b873e3497..fb7464a77 100644
+--- a/externals/tinyxml/tinyxml2.h
++++ b/externals/tinyxml/tinyxml2.h
+@@ -76,7 +76,7 @@ distribution.
+ #if defined(DEBUG)
+ #   if defined(_MSC_VER)
+ #       // "(void)0," is for suppressing C4127 warning in "assert(false)", "assert(true)" and the like
+-#       define TIXMLASSERT( x )           if ( !((void)0,(x))) { __debugbreak(); } //if ( !(x)) WinDebugBreak()
++#       define TIXMLASSERT( x )           if ( !((void)0,(x))) { __debugbreak(); }
+ #   elif defined (ANDROID_NDK)
+ #       include <android/log.h>
+ #       define TIXMLASSERT( x )           if ( !(x)) { __android_log_assert( "assert", "grinliz", "ASSERT in '%s' at %d.", __FILE__, __LINE__ ); }
+@@ -84,8 +84,8 @@ distribution.
+ #       include <assert.h>
+ #       define TIXMLASSERT                assert
+ #   endif
+-#   else
+-#       define TIXMLASSERT( x )           {}
++#else
++#   define TIXMLASSERT( x )               {}
+ #endif
+ 
+ 
+@@ -166,7 +166,6 @@ private:
+         NEEDS_DELETE = 0x200
+     };
+ 
+-    // After parsing, if *_end != 0, it can be set to zero.
+     int     _flags;
+     char*   _start;
+     char*   _end;
+@@ -557,16 +556,7 @@ public:
+         if ( p == q ) {
+             return true;
+         }
+-        int n = 0;
+-        while( *p && *q && *p == *q && n<nChar ) {
+-            ++p;
+-            ++q;
+-            ++n;
+-        }
+-        if ( (n == nChar) || ( *p == 0 && *q == 0 ) ) {
+-            return true;
+-        }
+-        return false;
++        return strncmp( p, q, nChar ) == 0;
+     }
+     
+     inline static bool IsUTF8Continuation( char p ) {
+@@ -1431,15 +1421,15 @@ public:
+     	@endverbatim
+     */
+ 	void SetText( const char* inText );
+-    /// Convenience method for setting text inside and element. See SetText() for important limitations.
++    /// Convenience method for setting text inside an element. See SetText() for important limitations.
+     void SetText( int value );
+-    /// Convenience method for setting text inside and element. See SetText() for important limitations.
++    /// Convenience method for setting text inside an element. See SetText() for important limitations.
+     void SetText( unsigned value );  
+-    /// Convenience method for setting text inside and element. See SetText() for important limitations.
++    /// Convenience method for setting text inside an element. See SetText() for important limitations.
+     void SetText( bool value );  
+-    /// Convenience method for setting text inside and element. See SetText() for important limitations.
++    /// Convenience method for setting text inside an element. See SetText() for important limitations.
+     void SetText( double value );  
+-    /// Convenience method for setting text inside and element. See SetText() for important limitations.
++    /// Convenience method for setting text inside an element. See SetText() for important limitations.
+     void SetText( float value );  
+ 
+     /**
+-- 
+2.55.0
+

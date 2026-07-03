@@ -1,0 +1,54 @@
+From f5b3d645e9aaf5905583cb84205d35f5962084b7 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Matthias=20Kr=C3=BCger?= <matthias.krueger@famsik.de>
+Date: Sun, 4 May 2014 11:47:51 +0200
+Subject: [PATCH] tinyxml: update to 2.1.0
+ (https://github.com/leethomason/tinyxml2)
+
+---
+ externals/tinyxml/tinyxml2.cpp | 0
+ externals/tinyxml/tinyxml2.h   | 8 ++++----
+ 2 files changed, 4 insertions(+), 4 deletions(-)
+ mode change 100644 => 100755 externals/tinyxml/tinyxml2.cpp
+ mode change 100644 => 100755 externals/tinyxml/tinyxml2.h
+
+diff --git a/externals/tinyxml/tinyxml2.cpp b/externals/tinyxml/tinyxml2.cpp
+old mode 100644
+new mode 100755
+diff --git a/externals/tinyxml/tinyxml2.h b/externals/tinyxml/tinyxml2.h
+old mode 100644
+new mode 100755
+index cb1dc1b29..183f6dc5b
+--- a/externals/tinyxml/tinyxml2.h
++++ b/externals/tinyxml/tinyxml2.h
+@@ -120,8 +120,8 @@ inline int TIXML_SNPRINTF( char* buffer, size_t size, const char* format, ... )
+ 	http://semver.org/
+ */
+ static const int TIXML2_MAJOR_VERSION = 2;
+-static const int TIXML2_MINOR_VERSION = 0;
+-static const int TIXML2_PATCH_VERSION = 2;
++static const int TIXML2_MINOR_VERSION = 1;
++static const int TIXML2_PATCH_VERSION = 0;
+ 
+ namespace tinyxml2
+ {
+@@ -1964,7 +1964,7 @@ public:
+     /** If streaming, start writing an element.
+         The element must be closed with CloseElement()
+     */
+-    void OpenElement( const char* name, bool compactMode );
++    void OpenElement( const char* name, bool compactMode=false );
+     /// If streaming, add an attribute to an open element.
+     void PushAttribute( const char* name, const char* value );
+     void PushAttribute( const char* name, int value );
+@@ -1972,7 +1972,7 @@ public:
+     void PushAttribute( const char* name, bool value );
+     void PushAttribute( const char* name, double value );
+     /// If streaming, close the Element.
+-    virtual void CloseElement( bool compactMode );
++    virtual void CloseElement( bool compactMode=false );
+ 
+     /// Add a text node.
+     void PushText( const char* text, bool cdata=false );
+-- 
+2.55.0
+
