@@ -6,11 +6,11 @@ on:
       - main
     paths:
       # Workflow file itself
-      - '.github/workflows/deploy_alpine.yml'
+      - ".github/workflows/deploy_alpine.yml"
       # Dockerfiles
-      - 'alpine.dockerfile'
+      - "alpine.dockerfile"
       # Patches
-      - 'patches/**'
+      - "patches/**"
   workflow_dispatch:
 
 permissions:
@@ -358,7 +358,7 @@ jobs:
           file: alpine.dockerfile
           build-args: "VERSION=${{ matrix.cfg.version }}"
           push: true
-          platforms: "linux/386,linux/amd64,linux/arm/v6,linux/arm/v7,linux/arm64,linux/ppc64le,linux/riscv64,linux/s390x"
+          platforms: "linux/386,linux/amd64,linux/arm64,linux/arm/v6,linux/arm/v7,linux/ppc64le,linux/riscv64,linux/s390x"
           annotations: ${{ steps.meta.outputs.annotations }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}

@@ -2,15 +2,15 @@ name: Publish Docker branch image (edge)
 
 on:
   schedule:
-    - cron: '0 6 * * *' # At 06:00
+    - cron: "0 6 * * *" # At 06:00
   push:
     branches:
       - main
     paths:
       # Workflow file itself
-      - '.github/workflows/deploy_edge.yml'
+      - ".github/workflows/deploy_edge.yml"
       # Dockerfiles
-      - '**/*.dockerfile'
+      - "**/*.dockerfile"
   workflow_dispatch:
 
 permissions:
@@ -29,9 +29,9 @@ jobs:
 
       matrix:
         variant:
-          - { name: "alpine",  suffix: "" }
-          - { name: "debian",  suffix: "-debian" }
-          - { name: "scratch", suffix: "-scratch" }
+          - { name: "alpine",  suffix: "",         platforms: "linux/386,linux/amd64,linux/arm64,linux/arm/v6,linux/arm/v7,linux/ppc64le,linux/riscv64,linux/s390x" }
+          - { name: "debian",  suffix: "-debian",  platforms: "linux/386,linux/amd64,linux/arm64,linux/arm/v5,linux/arm/v7,linux/ppc64le,linux/riscv64,linux/s390x" }
+          - { name: "scratch", suffix: "-scratch", platforms: "linux/386,linux/amd64,linux/arm64,linux/arm/v6,linux/arm/v7,linux/ppc64le,linux/riscv64,linux/s390x" }
 
     steps:
       - name: Check out the repo
@@ -80,7 +80,7 @@ jobs:
           file: ${{ matrix.variant.name }}.dockerfile
           build-args: "VERSION=main"
           push: true
-          platforms: "linux/386,linux/amd64,linux/arm/v6,linux/arm/v7,linux/arm64,linux/ppc64le,linux/s390x"
+          platforms: ${{ matrix.variant.platforms }}
           annotations: ${{ steps.meta.outputs.annotations }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
