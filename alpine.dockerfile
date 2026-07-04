@@ -9,7 +9,7 @@ RUN git clone --depth 1 --branch "${VERSION}" https://github.com/cppcheck-openso
 WORKDIR /cppcheck
 
 ADD patches /patches
-RUN if [ -d "../patches/${VERSION}" ]; then git apply ../patches/${VERSION}/*.patch; fi
+RUN if [ -d "../patches/${VERSION}" ]; then git apply --ignore-whitespace ../patches/${VERSION}/*.patch; fi
 RUN make \
     CXXFLAGS="-O3 -DNDEBUG -w -flto=$(nproc) -pipe -DNO_UNIX_BACKTRACE_SUPPORT" \
     HAVE_RULES=yes \
