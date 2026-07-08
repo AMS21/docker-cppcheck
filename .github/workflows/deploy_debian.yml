@@ -324,7 +324,7 @@ jobs:
           flavor: |
             latest=${{ matrix.cfg.latest }}
             prefix=
-            suffix=debian,onlatest=true
+            suffix=-debian,onlatest=true
           # generate Docker tags based on the following events/attributes
           tags: |
             type=pep440,pattern={{version}},value=${{ matrix.cfg.tag }}
